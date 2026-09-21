@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supribem - Início</title>
+    <style>
+        :root {
+            --primary: #0b1f73; /* Azul Royal Profundo (Baseado na logo)[cite: 1] */
+            --primary-dark: #071347;
+            --accent: #f97316; /* Laranja da borda da logo[cite: 1] */
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #d1d5db;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--accent);
+            text-align: center;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 24px 16px;
+            font-family: 'Impact', Charcoal, sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            font-style: italic;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .offline-badge {
+            background-color: var(--accent);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            vertical-align: middle;
+            margin-left: 6px;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-style: normal;
+        }
+
+        .menu-body {
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .menu-description {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .btn-menu {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(11, 31, 115, 0.2);
+        }
+
+        .btn-menu:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-sangria {
+            background-color: #d97706;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.2);
+        }
+
+        .btn-sangria:hover {
+            background-color: #b45309;
+        }
+
+        .btn-pdf {
+            background-color: #0d9488;
+            box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
+        }
+
+        .btn-pdf:hover {
+            background-color: #0f766e;
+        }
+
+        footer {
+            padding: 12px;
+            background-color: #fafafa;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            Supribem <span class="offline-badge"></span>
+        </header>
+
+        <div class="menu-body">
+            <div class="menu-description">Selecione o módulo desejado para gerenciar os caixas:</div>
+
+            <!-- Botão para Tela de Fechamento -->
+            <a href="fechamento.html" class="btn-menu">
+                <span>📋</span> Tela de Fechamento
+            </a>
+
+            <!-- Botão para Tela de Sangria -->
+            <a href="sangria.html" class="btn-menu btn-sangria">
+                <span>💸</span> Tela de Sangria
+            </a>
+
+            <!-- Botão para Gerar Relatório em PDF -->
+            <button class="btn-menu btn-pdf" id="btnGerarPdf">
+                <span>📊</span> Gerar Relatório PDF
+            </button>
+        </div>
+
+        <footer>
+            Supribox &bull; Sistema de Caixa Local
+        </footer>
+    </div>
+
+    <script>
+        const btnGerarPdf = document.getElementById('btnGerarPdf');
+
+        btnGerarPdf.addEventListener('click', () => {
+            // Recupera os dados salvos no navegador de ambas as telas
+            const lancamentosFechamento = JSON.parse(localStorage.getItem('supribox_lancamentos_v4')) || [];
+            const sangrias = JSON.parse(localStorage.getItem('supribox_sangrias')) || [];
+
+            if (lancamentosFechamento.length === 0 && sangrias.length === 0) {
+                alert('Não há dados lançados no Fechamento ou na Sangria para gerar o relatório.');
+                return;
+            }
+
+            // Organiza os totais de Fechamento
+            let totalDinheiro = 0, totalCredito = 0, totalDebito = 0, totalAlimentacao = 0, totalPixFech = 0, totalPos = 0;
+            lancamentosFechamento.forEach(i => {
+                if (i.tipo === 'dinheiro') totalDinheiro += i.valor;
+                if (i.tipo === 'credito') totalCredito += i.valor;
+                if (i.tipo === 'debito') totalDebito += i.valor;
+                if (i.tipo === 'alimentacao') totalAlimentacao += i.valor;
+                if (i.tipo === 'pix') totalPixFech += i.valor;
+                if (i.tipo === 'pos') totalPos += i.valor;
+            });
+            const geralFechamento = totalDinheiro + totalCredito + totalDebito + totalAlimentacao + totalPixFech + totalPos;
+
+            // Organiza os totais de Sangria
+            let totalDepositos = 0, totalPixSangria = 0, totalTrocas = 0;
+            sangrias.forEach(i => {
+                if (i.tipo === 'depositos') totalDepositos += i.valor;
+                if (i.tipo === 'pix') totalPixSangria += i.valor;
+                if (i.tipo === 'trocas') totalTrocas += i.valor;
+            });
+            const geralSangria = totalDepositos + totalPixSangria + totalTrocas;
+
+            const formatMoney = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // Criação de uma janela de impressão limpa para PDF ou salvamento direto
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Relatório de Caixa - Supribem</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; color: #333; padding: 20px; }
+                        h1 { color: #0b1f73; text-align: center; text-transform: uppercase; margin-bottom: 5px; }
+                        .subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+                        h2 { color: #0b1f73; border-bottom: 2px solid #0b1f73; padding-bottom: 5px; margin-top: 20px; font-size: 1.2rem; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; font-size: 0.9rem; }
+                        th { background-color: #f0f4f8; color: #0b1f73; }
+                        .total-row { font-weight: bold; background-color: #fafafa; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Supribem - Relatório Geral</h1>
+                    <div class="subtitle">Data de Emissão: ${new Date().toLocaleString('pt-BR')}</div>
+
+                    <h2>1. Resumo de Fechamento de Caixa</h2>
+                    <table>
+                        <tr><th>Forma de Pagamento</th><th>Valor Acumulado</th></tr>
+                        <tr><td>Dinheiro</td><td>${formatMoney(totalDinheiro)}</td></tr>
+                        <tr><td>Crédito</td><td>${formatMoney(totalCredito)}</td></tr>
+                        <tr><td>Débito</td><td>${formatMoney(totalDebito)}</td></tr>
+                        <tr><td>Alimentação</td><td>${formatMoney(totalAlimentacao)}</td></tr>
+                        <tr><td>Pix</td><td>${formatMoney(totalPixFech)}</td></tr>
+                        <tr><td>POS</td><td>${formatMoney(totalPos)}</td></tr>
+                        <tr class="total-row"><td>Total Geral Fechamento</td><td>${formatMoney(geralFechamento)}</td></tr>
+                    </table>
+
+                    <h2>2. Resumo de Sangria / Retiradas</h2>
+                    <table>
+                        <tr><th>Tipo de Sangria</th><th>Valor Acumulado</th></tr>
+                        <tr><td>Dinheiro (Depósitos)</td><td>${formatMoney(totalDepositos)}</td></tr>
+                        <tr><td>Pix</td><td>${formatMoney(totalPixSangria)}</td></tr>
+                        <tr><td>Trocas</td><td>${formatMoney(totalTrocas)}</td></tr>
+                        <tr class="total-row"><td>Total Geral Sangria</td><td>${formatMoney(geralSangria)}</td></tr>
+                    </table>
+
+                    <script>
+                        window.onload = function() { window.print(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        });
+    </script>
+</body>
+</html>
