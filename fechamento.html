@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supribox - Lançamentos</title>
+    <style>
+        :root {
+            --primary: #0b1f73; /* Azul Royal Profundo (Baseado na logo)[cite: 1] */
+            --primary-dark: #071347;
+            --accent: #f97316; /* Laranja da borda da logo[cite: 1] */
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #d1d5db;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 94vh;
+            border: 2px solid var(--accent); /* Detalhe em laranja remetendo à borda da logo[cite: 1] */
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-family: 'Impact', Charcoal, sans-serif; /* Tipografia forte e marcante estilo a logo[cite: 1] */
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-style: italic; /* Estilo inclinado clássico da marca[cite: 1] */
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .btn-voltar {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-style: normal;
+            font-family: sans-serif;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .offline-badge {
+            background-color: var(--accent);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            vertical-align: middle;
+            margin-left: 6px;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-style: normal;
+        }
+
+        /* Resumo por categoria no topo (Grid ajustada para 6 itens) */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            padding: 10px 16px;
+            background-color: #f0f4f8;
+            border-bottom: 1px solid var(--border-color);
+            max-height: 210px;
+            overflow-y: auto;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .summary-title {
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #111;
+            margin-top: 2px;
+        }
+
+        .summary-card.dinheiro { border-left-color: #16a34a; }
+        .summary-card.credito { border-left-color: #2563eb; }
+        .summary-card.debito { border-left-color: #0b1f73; }
+        .summary-card.alimentacao { border-left-color: #d97706; }
+        .summary-card.pix { border-left-color: #0d9488; }
+        .summary-card.pos { border-left-color: #9333ea; }
+
+        .input-section {
+            padding: 16px;
+            background-color: #fafafa;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        select, input[type="text"] {
+            padding: 10px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="text"] {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        button.btn-add {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        button.btn-add:active {
+            background-color: var(--primary-dark);
+        }
+
+        .list-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .lancamento-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .badge-tipo {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        .bg-dinheiro { background-color: #16a34a; }
+        .bg-credito { background-color: #2563eb; }
+        .bg-debito { background-color: #0b1f73; }
+        .bg-alimentacao { background-color: #d97706; }
+        .bg-pix { background-color: #0d9488; }
+        .bg-pos { background-color: #9333ea; }
+
+        .lancamento-valor {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .lancamento-hora {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        button.btn-delete {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+        }
+
+        footer {
+            padding: 12px 16px;
+            background-color: #fafafa;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-geral {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .total-geral span {
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
+
+        button.btn-clear {
+            background: none;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        button.btn-clear:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="btn-voltar">⬅️ Voltar</a>
+            Supribem <span class="offline-badge"></span>
+        </header>
+
+        <!-- Painel de Totais Acumulados por Tipo -->
+        <div class="summary-grid">
+            <div class="summary-card dinheiro">
+                <div class="summary-title">Dinheiro</div>
+                <div class="summary-value" id="totDinheiro">R$ 0,00</div>
+            </div>
+            <div class="summary-card credito">
+                <div class="summary-title">Crédito</div>
+                <div class="summary-value" id="totCredito">R$ 0,00</div>
+            </div>
+            <div class="summary-card debito">
+                <div class="summary-title">Débito</div>
+                <div class="summary-value" id="totDebito">R$ 0,00</div>
+            </div>
+            <div class="summary-card alimentacao">
+                <div class="summary-title">Alimentação</div>
+                <div class="summary-value" id="totAlimentacao">R$ 0,00</div>
+            </div>
+            <div class="summary-card pix">
+                <div class="summary-title">Pix</div>
+                <div class="summary-value" id="totPix">R$ 0,00</div>
+            </div>
+            <div class="summary-card pos">
+                <div class="summary-title">POS</div>
+                <div class="summary-value" id="totPos">R$ 0,00</div>
+            </div>
+        </div>
+
+        <!-- Seção de Entrada de Dados -->
+        <div class="input-section">
+            <div class="form-row">
+                <div class="input-group" style="flex: 1.2;">
+                    <label for="slcTipo">Forma de Pagamento</label>
+                    <select id="slcTipo">
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="credito">Crédito</option>
+                        <option value="debito">Débito</option>
+                        <option value="alimentacao">Alimentação</option>
+                        <option value="pix">Pix</option>
+                        <option value="pos">POS</option>
+                    </select>
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label for="txtValor">Valor (R$)</label>
+                    <input type="text" id="txtValor" inputmode="numeric" placeholder="0,00" autocomplete="off">
+                </div>
+            </div>
+            <button class="btn-add" id="btnAdd">Adicionar Lançamento</button>
+        </div>
+
+        <!-- Lista de Histórico -->
+        <div class="list-section">
+            <div class="list-header">
+                <span>Histórico de Lançamentos</span>
+                <span id="lblCount">0 itens</span>
+            </div>
+            <div id="lancamentoList"></div>
+        </div>
+
+        <!-- Rodapé com Total Geral -->
+        <footer>
+            <div class="total-geral">Geral: <span id="totalGeral">R$ 0,00</span></div>
+            <button class="btn-clear" id="btnClear">Zerar Tudo</button>
+        </footer>
+    </div>
+
+    <script>
+        const slcTipo = document.getElementById('slcTipo');
+        const txtValor = document.getElementById('txtValor');
+        const btnAdd = document.getElementById('btnAdd');
+        const lancamentoList = document.getElementById('lancamentoList');
+        const lblCount = document.getElementById('lblCount');
+        const totalGeral = document.getElementById('totalGeral');
+
+        const totDinheiro = document.getElementById('totDinheiro');
+        const totCredito = document.getElementById('totCredito');
+        const totDebito = document.getElementById('totDebito');
+        const totAlimentacao = document.getElementById('totAlimentacao');
+        const totPix = document.getElementById('totPix');
+        const totPos = document.getElementById('totPos');
+        const btnClear = document.getElementById('btnClear');
+
+        let lancamentos = JSON.parse(localStorage.getItem('supribox_lancamentos_v4')) || [];
+
+        txtValor.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (!v) {
+                e.target.value = '';
+                return;
+            }
+            v = (parseFloat(v) / 100).toFixed(2);
+            v = v.replace('.', ',');
+            v = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = v;
+        });
+
+        txtValor.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                adicionarLancamento();
+            }
+        });
+
+        btnAdd.addEventListener('click', adicionarLancamento);
+
+        function adicionarLancamento() {
+            const valorTexto = txtValor.value.replace(/\./g, '').replace(',', '.');
+            const valorNumerico = parseFloat(valorTexto);
+
+            if (isNaN(valorNumerico) || valorNumerico <= 0) {
+                txtValor.focus();
+                return;
+            }
+
+            const novoItem = {
+                id: Date.now(),
+                tipo: slcTipo.value,
+                valor: valorNumerico,
+                hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            };
+
+            lancamentos.unshift(novoItem);
+            salvarEAtualizar();
+
+            txtValor.value = '';
+            txtValor.focus();
+        }
+
+        function removerItem(id) {
+            lancamentos = lancamentos.filter(item => item.id !== id);
+            salvarEAtualizar();
+        }
+
+        btnClear.addEventListener('click', () => {
+            if (lancamentos.length > 0 && confirm('Deseja realmente zerar todos os lançamentos acumulados?')) {
+                lancamentos = [];
+                salvarEAtualizar();
+            }
+        });
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function salvarEAtualizar() {
+            localStorage.setItem('supribox_lancamentos_v4', JSON.stringify(lancamentos));
+            renderizar();
+        }
+
+        function renderizar() {
+            lancamentoList.innerHTML = '';
+
+            let somaDinheiro = 0;
+            let somaCredito = 0;
+            let somaDebito = 0;
+            let somaAlimentacao = 0;
+            let somaPix = 0;
+            let somaPos = 0;
+
+            if (lancamentos.length === 0) {
+                lancamentoList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 30px; font-size: 0.9rem;">Nenhum lançamento registrado.</p>';
+            }
+
+            lancamentos.forEach(item => {
+                if (item.tipo === 'dinheiro') somaDinheiro += item.valor;
+                if (item.tipo === 'credito') somaCredito += item.valor;
+                if (item.tipo === 'debito') somaDebito += item.valor;
+                if (item.tipo === 'alimentacao') somaAlimentacao += item.valor;
+                if (item.tipo === 'pix') somaPix += item.valor;
+                if (item.tipo === 'pos') somaPos += item.valor;
+
+                const nomeTipoFormatado = item.tipo === 'pos' ? 'POS' : (item.tipo.charAt(0).toUpperCase() + item.tipo.slice(1));
+
+                const div = document.createElement('div');
+                div.className = 'lancamento-item';
+                div.innerHTML = `
+                    <div>
+                        <span class="badge-tipo bg-${item.tipo}">${nomeTipoFormatado}</span>
+                        <div class="lancamento-hora">${item.hora}</div>
+                    </div>
+                    <div class="lancamento-valor">${formatarMoeda(item.valor)}</div>
+                    <button class="btn-delete" onclick="removerItem(${item.id})" title="Excluir">🗑️</button>
+                `;
+                lancamentoList.appendChild(div);
+            });
+
+            totDinheiro.textContent = formatarMoeda(somaDinheiro);
+            totCredito.textContent = formatarMoeda(somaCredito);
+            totDebito.textContent = formatarMoeda(somaDebito);
+            totAlimentacao.textContent = formatarMoeda(somaAlimentacao);
+            totPix.textContent = formatarMoeda(somaPix);
+            totPos.textContent = formatarMoeda(somaPos);
+
+            const somaGeral = somaDinheiro + somaCredito + somaDebito + somaAlimentacao + somaPix + somaPos;
+            totalGeral.textContent = formatarMoeda(somaGeral);
+            lblCount.textContent = `${lancamentos.length} ite${lancamentos.length === 1 ? 'm' : 'ns'}`;
+        }
+
+        renderizar();
+    </script>
+</body>
+</html>
