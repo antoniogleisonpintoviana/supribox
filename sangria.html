@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supribox - Sangria</title>
+    <style>
+        :root {
+            --primary: #0b1f73; /* Azul Royal Profundo (Baseado na logo)[cite: 1] */
+            --primary-dark: #071347;
+            --accent: #f97316; /* Laranja da borda da logo[cite: 1] */
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #d1d5db;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 94vh;
+            border: 2px solid var(--accent); /* Detalhe em laranja remetendo à borda da logo[cite: 1] */
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-family: 'Impact', Charcoal, sans-serif; /* Tipografia forte e marcante estilo a logo[cite: 1] */
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            font-style: italic; /* Estilo inclinado clássico da marca[cite: 1] */
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .btn-voltar {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-style: normal;
+            font-family: sans-serif;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .offline-badge {
+            background-color: var(--accent);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            vertical-align: middle;
+            margin-left: 6px;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-style: normal;
+        }
+
+        .sub-header {
+            background-color: #e2e8f0;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #334155;
+            padding: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Resumo de Sangria por Categoria */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            padding: 10px 16px;
+            background-color: #f0f4f8;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-card {
+            background: white;
+            padding: 8px 6px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .summary-title {
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #111;
+            margin-top: 2px;
+        }
+
+        .summary-card.depositos { border-left-color: #16a34a; }
+        .summary-card.pix { border-left-color: #0d9488; }
+        .summary-card.trocas { border-left-color: #d97706; }
+
+        .input-section {
+            padding: 16px;
+            background-color: #fafafa;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        select, input[type="text"] {
+            padding: 10px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="text"] {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        button.btn-add {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        button.btn-add:active {
+            background-color: var(--primary-dark);
+        }
+
+        .list-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .sangria-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .badge-tipo {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        .bg-depositos { background-color: #16a34a; }
+        .bg-pix { background-color: #0d9488; }
+        .bg-trocas { background-color: #d97706; }
+
+        .sangria-valor {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .sangria-hora {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        button.btn-delete {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+        }
+
+        footer {
+            padding: 12px 16px;
+            background-color: #fafafa;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-geral {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .total-geral span {
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
+
+        button.btn-clear {
+            background: none;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        button.btn-clear:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="btn-voltar">⬅️ Voltar</a>
+            Supribem <span class="offline-badge"></span>
+        </header>
+        <div class="sub-header">Módulo de Sangria / Retiradas</div>
+
+        <!-- Painel de Totais Acumulados de Sangria -->
+        <div class="summary-grid">
+            <div class="summary-card depositos">
+                <div class="summary-title">Depósitos</div>
+                <div class="summary-value" id="totDepositos">R$ 0,00</div>
+            </div>
+            <div class="summary-card pix">
+                <div class="summary-title">Pix</div>
+                <div class="summary-value" id="totPix">R$ 0,00</div>
+            </div>
+            <div class="summary-card trocas">
+                <div class="summary-title">Trocas</div>
+                <div class="summary-value" id="totTrocas">R$ 0,00</div>
+            </div>
+        </div>
+
+        <!-- Seção de Entrada de Dados -->
+        <div class="input-section">
+            <div class="form-row">
+                <div class="input-group" style="flex: 1.2;">
+                    <label for="slcTipo">Tipo de Sangria</label>
+                    <select id="slcTipo">
+                        <option value="depositos">Dinheiro (Depósitos)</option>
+                        <option value="pix">Pix</option>
+                        <option value="trocas">Trocas</option>
+                    </select>
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label for="txtValor">Valor (R$)</label>
+                    <input type="text" id="txtValor" inputmode="numeric" placeholder="0,00" autocomplete="off">
+                </div>
+            </div>
+            <button class="btn-add" id="btnAdd">Adicionar Sangria</button>
+        </div>
+
+        <!-- Lista de Histórico -->
+        <div class="list-section">
+            <div class="list-header">
+                <span>Histórico de Sangrias</span>
+                <span id="lblCount">0 itens</span>
+            </div>
+            <div id="sangriaList"></div>
+        </div>
+
+        <!-- Rodapé com Total Geral de Sangria -->
+        <footer>
+            <div class="total-geral">Total Sangria: <span id="totalGeral">R$ 0,00</span></div>
+            <button class="btn-clear" id="btnClear">Zerar Tudo</button>
+        </footer>
+    </div>
+
+    <script>
+        const slcTipo = document.getElementById('slcTipo');
+        const txtValor = document.getElementById('txtValor');
+        const btnAdd = document.getElementById('btnAdd');
+        const sangriaList = document.getElementById('sangriaList');
+        const lblCount = document.getElementById('lblCount');
+        const totalGeral = document.getElementById('totalGeral');
+
+        const totDepositos = document.getElementById('totDepositos');
+        const totPix = document.getElementById('totPix');
+        const totTrocas = document.getElementById('totTrocas');
+        const btnClear = document.getElementById('btnClear');
+
+        let sangrias = JSON.parse(localStorage.getItem('supribox_sangrias')) || [];
+
+        txtValor.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (!v) {
+                e.target.value = '';
+                return;
+            }
+            v = (parseFloat(v) / 100).toFixed(2);
+            v = v.replace('.', ',');
+            v = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = v;
+        });
+
+        txtValor.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                adicionarSangria();
+            }
+        });
+
+        btnAdd.addEventListener('click', adicionarSangria);
+
+        function adicionarSangria() {
+            const valorTexto = txtValor.value.replace(/\./g, '').replace(',', '.');
+            const valorNumerico = parseFloat(valorTexto);
+
+            if (isNaN(valorNumerico) || valorNumerico <= 0) {
+                txtValor.focus();
+                return;
+            }
+
+            const novoItem = {
+                id: Date.now(),
+                tipo: slcTipo.value,
+                valor: valorNumerico,
+                hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            };
+
+            sangrias.unshift(novoItem);
+            salvarEAtualizar();
+
+            txtValor.value = '';
+            txtValor.focus();
+        }
+
+        function removerItem(id) {
+            sangrias = sangrias.filter(item => item.id !== id);
+            salvarEAtualizar();
+        }
+
+        btnClear.addEventListener('click', () => {
+            if (sangrias.length > 0 && confirm('Deseja realmente zerar todas as sangrias registradas?')) {
+                sangrias = [];
+                salvarEAtualizar();
+            }
+        });
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function salvarEAtualizar() {
+            localStorage.setItem('supribox_sangrias', JSON.stringify(sangrias));
+            renderizar();
+        }
+
+        function renderizar() {
+            sangriaList.innerHTML = '';
+
+            let somaDepositos = 0;
+            let somaPix = 0;
+            let somaTrocas = 0;
+
+            if (sangrias.length === 0) {
+                sangriaList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 30px; font-size: 0.9rem;">Nenhuma sangria registrada.</p>';
+            }
+
+            sangrias.forEach(item => {
+                if (item.tipo === 'depositos') somaDepositos += item.valor;
+                if (item.tipo === 'pix') somaPix += item.valor;
+                if (item.tipo === 'trocas') somaTrocas += item.valor;
+
+                let nomeFormatado = 'Depósitos';
+                if (item.tipo === 'pix') nomeFormatado = 'Pix';
+                if (item.tipo === 'trocas') nomeFormatado = 'Trocas';
+
+                const div = document.createElement('div');
+                div.className = 'sangria-item';
+                div.innerHTML = `
+                    <div>
+                        <span class="badge-tipo bg-${item.tipo}">${nomeFormatado}</span>
+                        <div class="sangria-hora">${item.hora}</div>
+                    </div>
+                    <div class="sangria-valor">${formatarMoeda(item.valor)}</div>
+                    <button class="btn-delete" onclick="removerItem(${item.id})" title="Excluir">🗑️</button>
+                `;
+                sangriaList.appendChild(div);
+            });
+
+            totDepositos.textContent = formatarMoeda(somaDepositos);
+            totPix.textContent = formatarMoeda(somaPix);
+            totTrocas.textContent = formatarMoeda(somaTrocas);
+
+            const somaGeral = somaDepositos + somaPix + somaTrocas;
+            totalGeral.textContent = formatarMoeda(somaGeral);
+            lblCount.textContent = `${sangrias.length} ite${sangrias.length === 1 ? 'm' : 'ns'}`;
+        }
+
+        renderizar();
+    </script>
+</body>
+</html>
