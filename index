@@ -145,12 +145,12 @@
 
             <!-- Botão para Tela de Fechamento -->
             <a href="fechamento.html" class="btn-menu">
-                <span>📋</span> Tela de Fechamento
+                <span>📋</span> Fechamento
             </a>
 
-            <!-- Botão para Tela de Sangria -->
+            <!-- Botão para Tela deSangria -->
             <a href="sangria.html" class="btn-menu btn-sangria">
-                <span>💸</span> Tela de Sangria
+                <span>💸</span> Sangria
             </a>
 
             <!-- Botão para Gerar Relatório em PDF -->
